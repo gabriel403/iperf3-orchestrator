@@ -1,7 +1,11 @@
 {
-  "name": "iperf-orchestrator-client",
+  "name": "@iperf-orchestrator/client",
   "version": "0.1.0",
   "private": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "bin": {
     "iperf-orchestrator-agent": "dist/index.js"
   },

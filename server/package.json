@@ -1,7 +1,11 @@
 {
-  "name": "iperf-orchestrator-server",
+  "name": "@iperf-orchestrator/server",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build",

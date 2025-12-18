@@ -297,6 +297,53 @@ If you encounter database errors:
 
 See [LICENSE](LICENSE) file for details.
 
+## Publishing
+
+This project uses GitHub Actions to automatically publish packages to npm:
+
+- **Server Package**: `@iperf-orchestrator/server`
+- **Client Package**: `@iperf-orchestrator/client`
+
+### Versioning
+
+The project follows [Semantic Versioning](https://semver.org/) (semver):
+
+- **Main branch**: Publishes stable releases with `latest` tag
+  - Format: `MAJOR.MINOR.PATCH` (e.g., `1.2.3`)
+  - Auto-increments patch version on each push
+
+- **Other branches**: Publishes beta releases with `beta` tag
+  - Format: `MAJOR.MINOR.PATCH-beta.BRANCH.TIMESTAMP.COMMIT` (e.g., `1.2.3-beta.feature-xyz.20241218143022.a1b2c3d`)
+  - Includes branch name, timestamp, and commit hash for traceability
+
+### Installation
+
+**Stable releases:**
+```bash
+npm install @iperf-orchestrator/server
+npm install @iperf-orchestrator/client
+```
+
+**Beta releases:**
+```bash
+npm install @iperf-orchestrator/server@beta
+npm install @iperf-orchestrator/client@beta
+```
+
+### Manual Publishing
+
+You can manually trigger a release via GitHub Actions:
+1. Go to Actions → Select workflow → Run workflow
+2. Choose version bump type (major, minor, patch)
+3. Only works on `main` branch
+
+### CI/CD Setup
+
+To enable publishing, add an `NPM_TOKEN` secret to your GitHub repository:
+1. Go to Settings → Secrets and variables → Actions
+2. Add a new secret named `NPM_TOKEN`
+3. Use an npm access token with publish permissions
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
