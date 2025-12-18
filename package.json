@@ -1,0 +1,17 @@
+{
+  "name": "iperf-orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Distributed iperf3 orchestration: Next.js server (schedules, API, web UI) + TypeScript client agents.",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev:server": "cd server && next dev",
+    "build:server": "cd server && next build",
+    "start:server": "cd server && next start",
+    "dev:client": "cd client && ts-node src/index.ts",
+    "build:client": "cd client && tsc -p tsconfig.json"
+  }
+}

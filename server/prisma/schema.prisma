@@ -1,0 +1,68 @@
+// Prisma schema for iperf-orchestrator server (SQLite for atomic, file-based storage)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Node {
+  id                     String    @id @default(cuid())
+  name                   String
+  description            String?
+  secretKey              String
+  pollIntervalSeconds    Int       @default(300)
+  lastSeenAt             DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  schedules              Schedule[]
+  testRuns               TestRun[]
+}
+
+model Schedule {
+  id                 String   @id @default(cuid())
+  node               Node     @relation(fields: [nodeId], references: [id])
+  nodeId             String
+
+  intervalSeconds    Int
+  enabled            Boolean  @default(true)
+
+  targetHost         String
+  targetPort         Int      @default(5201)
+  durationSeconds    Int      @default(10)
+  parallelStreams    Int      @default(1)
+
+  nextRunAt          DateTime
+  lastRunAt          DateTime?
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  testRuns           TestRun[]
+}
+
+model TestRun {
+  id              String   @id @default(cuid())
+  node            Node     @relation(fields: [nodeId], references: [id])
+  nodeId          String
+
+  schedule        Schedule? @relation(fields: [scheduleId], references: [id])
+  scheduleId      String?
+
+  startedAt       DateTime
+  finishedAt      DateTime
+  success         Boolean
+  errorMessage    String?
+
+  throughputMbps  Float?
+  jitterMs        Float?
+  lossPercent     Float?
+
+  rawJson         String?
+
+  createdAt       DateTime @default(now())
+}

@@ -1,0 +1,20 @@
+{
+  "name": "iperf-orchestrator-client",
+  "version": "0.1.0",
+  "private": false,
+  "bin": {
+    "iperf-orchestrator-agent": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "zod": "^3.23.8",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.0",
+    "@types/node": "^22.7.0"
+  }
+}
