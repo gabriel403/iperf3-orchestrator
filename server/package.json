@@ -1,10 +1,13 @@
 {
-  "name": "@iperf-orchestrator/server",
+  "name": "@gabriel403/iperf-orchestrator-server",
   "version": "0.1.0",
   "private": false,
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
-    "access": "public"
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabriel403/iperf3-orchestrator.git"
   },
   "scripts": {
     "dev": "next dev --webpack",

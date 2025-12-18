@@ -1,15 +1,15 @@
 # Publishing Guide
 
-This document explains how the automated publishing system works for `@iperf-orchestrator/server` and `@iperf-orchestrator/client`.
+This document explains how the automated publishing system works for `@gabriel403/iperf-orchestrator-server` and `@gabriel403/iperf-orchestrator-client`.
 
 ## Overview
 
-The project uses GitHub Actions to automatically publish packages to npm when changes are pushed to the repository.
+The project uses GitHub Actions to automatically publish packages to GitHub Packages when changes are pushed to the repository.
 
 ## Package Names
 
-- **Server**: `@iperf-orchestrator/server`
-- **Client**: `@iperf-orchestrator/client`
+- **Server**: `@gabriel403/iperf-orchestrator-server`
+- **Client**: `@gabriel403/iperf-orchestrator-client`
 
 ## Versioning Strategy
 
@@ -61,7 +61,7 @@ Steps:
 3. Build
 4. Determine version (stable or beta)
 5. Update package.json
-6. Publish to npm
+6. Publish to GitHub Packages
 7. Create git tag (main only)
 
 ## Setup Requirements
@@ -104,9 +104,12 @@ npm access grant read-write @iperf-orchestrator:OWNER
 
 ### Via Command Line
 
-For local testing (requires npm login):
+For local testing (requires GitHub authentication):
 
 ```bash
+# Authenticate with GitHub Packages
+echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> ~/.npmrc
+
 # Server
 cd server
 npm version patch  # or major/minor
@@ -136,10 +139,10 @@ Beta releases are automatically created for non-main branches:
 
 ### Publishing Fails
 
-1. Check `NPM_TOKEN` secret is set correctly
-2. Verify npm account has publish permissions
-3. Check package name doesn't conflict with existing packages
-4. Ensure version hasn't been published before
+1. Verify `GITHUB_TOKEN` has `packages: write` permission (automatic in GitHub Actions)
+2. Check repository settings allow GitHub Packages
+3. Ensure package name follows `@OWNER/package-name` format
+4. Verify version hasn't been published before
 
 ### Version Conflicts
 

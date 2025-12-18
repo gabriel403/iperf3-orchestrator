@@ -1,10 +1,13 @@
 {
-  "name": "@iperf-orchestrator/client",
+  "name": "@gabriel403/iperf-orchestrator-client",
   "version": "0.1.0",
   "private": false,
   "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
-    "access": "public"
+    "registry": "https://npm.pkg.github.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gabriel403/iperf3-orchestrator.git"
   },
   "bin": {
     "iperf-orchestrator-agent": "dist/index.js"

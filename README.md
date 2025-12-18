@@ -299,10 +299,10 @@ See [LICENSE](LICENSE) file for details.
 
 ## Publishing
 
-This project uses GitHub Actions to automatically publish packages to npm:
+This project uses GitHub Actions to automatically publish packages to GitHub Packages:
 
-- **Server Package**: `@iperf-orchestrator/server`
-- **Client Package**: `@iperf-orchestrator/client`
+- **Server Package**: `@gabriel403/iperf-orchestrator-server`
+- **Client Package**: `@gabriel403/iperf-orchestrator-client`
 
 ### Versioning
 
@@ -318,16 +318,23 @@ The project follows [Semantic Versioning](https://semver.org/) (semver):
 
 ### Installation
 
+**Setup GitHub Packages authentication:**
+```bash
+# Create a GitHub Personal Access Token with `read:packages` permission
+# Then add to your .npmrc:
+echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> ~/.npmrc
+```
+
 **Stable releases:**
 ```bash
-npm install @iperf-orchestrator/server
-npm install @iperf-orchestrator/client
+npm install @gabriel403/iperf-orchestrator-server
+npm install @gabriel403/iperf-orchestrator-client
 ```
 
 **Beta releases:**
 ```bash
-npm install @iperf-orchestrator/server@beta
-npm install @iperf-orchestrator/client@beta
+npm install @gabriel403/iperf-orchestrator-server@beta
+npm install @gabriel403/iperf-orchestrator-client@beta
 ```
 
 ### Manual Publishing
@@ -339,10 +346,7 @@ You can manually trigger a release via GitHub Actions:
 
 ### CI/CD Setup
 
-To enable publishing, add an `NPM_TOKEN` secret to your GitHub repository:
-1. Go to Settings → Secrets and variables → Actions
-2. Add a new secret named `NPM_TOKEN`
-3. Use an npm access token with publish permissions
+No additional setup required! GitHub Actions automatically uses `GITHUB_TOKEN` to publish to GitHub Packages. The workflows have the necessary permissions configured.
 
 ## Contributing
 
