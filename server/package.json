@@ -29,6 +29,7 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@edge-runtime/jest-environment": "^4.0.0",
     "@tailwindcss/postcss": "^4.1.18",
     "@testing-library/jest-dom": "^6.1.5",
     "@testing-library/react": "^14.1.2",
@@ -45,6 +46,8 @@
     "postcss": "^8.5.6",
     "prisma": "^5.22.0",
     "tailwindcss": "^4.1.18",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "undici": "^7.16.0",
+    "whatwg-fetch": "^3.6.20"
   }
 }
