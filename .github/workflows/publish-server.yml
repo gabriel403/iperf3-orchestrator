@@ -27,6 +27,8 @@ jobs:
       contents: write
       packages: write
       id-token: write
+    env:
+      DATABASE_URL: "file:./server/prisma/test.db"
     
     steps:
       - name: Checkout code
@@ -49,24 +51,19 @@ jobs:
       - name: Setup database
         run: |
           cd server
+          mkdir -p prisma
           npx prisma generate
-          npx prisma db push --skip-generate
-        env:
-          DATABASE_URL: "file:./prisma/test.db"
+          npx prisma db push --skip-generate --accept-data-loss
 
       - name: Run tests
         run: |
           cd server
           yarn test --coverage --watchAll=false
-        env:
-          DATABASE_URL: "file:./prisma/test.db"
 
       - name: Build
         run: |
           cd server
           yarn build
-        env:
-          DATABASE_URL: "file:./prisma/test.db"
 
       - name: Determine version
         id: version

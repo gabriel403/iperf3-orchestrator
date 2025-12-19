@@ -32,10 +32,9 @@ jobs:
       - name: Setup database
         run: |
           cd server
+          mkdir -p prisma
           npx prisma generate
-          npx prisma db push --skip-generate
-        env:
-          DATABASE_URL: "file:./prisma/test.db"
+          npx prisma db push --skip-generate --accept-data-loss
 
       - name: Run linter
         run: |
@@ -46,15 +45,11 @@ jobs:
         run: |
           cd server
           yarn test --coverage --watchAll=false
-        env:
-          DATABASE_URL: "file:./prisma/test.db"
 
       - name: Build
         run: |
           cd server
           yarn build
-        env:
-          DATABASE_URL: "file:./prisma/test.db"
 
   test-client:
     runs-on: ubuntu-latest
