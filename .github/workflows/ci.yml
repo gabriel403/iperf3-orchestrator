@@ -12,6 +12,8 @@ on:
 jobs:
   test-server:
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "file:./server/prisma/test.db"
     
     steps:
       - name: Checkout code
