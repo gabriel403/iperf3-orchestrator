@@ -46,15 +46,26 @@ jobs:
           cd server
           yarn install --frozen-lockfile
 
+      - name: Setup database
+        run: |
+          cd server
+          npx prisma generate
+        env:
+          DATABASE_URL: "file:./prisma/test.db"
+
       - name: Run tests
         run: |
           cd server
           yarn test --coverage --watchAll=false
+        env:
+          DATABASE_URL: "file:./prisma/test.db"
 
       - name: Build
         run: |
           cd server
           yarn build
+        env:
+          DATABASE_URL: "file:./prisma/test.db"
 
       - name: Determine version
         id: version
