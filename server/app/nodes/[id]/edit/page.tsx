@@ -49,14 +49,17 @@ export default async function EditNodePage({
   const node = await prisma.node.findUnique({ where: { id } });
   if (!node) return notFound();
 
+  // Store node.id in a const to ensure TypeScript knows it's not null
+  const nodeId = node.id;
+
   async function action(formData: FormData) {
     "use server";
-    await updateNode(node.id, formData);
+    await updateNode(nodeId, formData);
   }
 
   async function deleteAction() {
     "use server";
-    await deleteNode(node.id);
+    await deleteNode(nodeId);
   }
 
   return (

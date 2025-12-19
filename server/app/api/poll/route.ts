@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
         data: {
           name: body.name ?? "Unnamed node",
           description: body.description,
-          secretKey: body.secretKey,
+          secretKey: apiKey, // Use apiKey which is guaranteed to be a string at this point
         },
       });
     }
