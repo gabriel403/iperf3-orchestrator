@@ -1,6 +1,7 @@
 {
   "name": "@gabriel403/iperf-orchestrator-client",
   "version": "0.1.0",
+  "license": "MIT",
   "private": false,
   "publishConfig": {
     "registry": "https://npm.pkg.github.com"
@@ -22,6 +23,7 @@
   },
   "devDependencies": {
     "typescript": "^5.7.0",
-    "@types/node": "^22.7.0"
+    "@types/node": "^22.7.0",
+    "@types/node-fetch": "^2.6.11"
   }
 }
