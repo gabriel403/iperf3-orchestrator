@@ -50,6 +50,7 @@ jobs:
         run: |
           cd server
           npx prisma generate
+          npx prisma db push --skip-generate
         env:
           DATABASE_URL: "file:./prisma/test.db"
 
