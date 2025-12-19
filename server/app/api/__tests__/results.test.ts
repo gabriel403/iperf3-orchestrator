@@ -1,3 +1,29 @@
+// Mock NextRequest and NextResponse before imports to avoid whatwg-fetch conflicts
+jest.mock('next/server', () => {
+  const actual = jest.requireActual('next/server');
+  return {
+    ...actual,
+    NextRequest: jest.fn().mockImplementation((url: string | URL, init?: RequestInit) => {
+      const body = init?.body;
+      const headers = new Headers(init?.headers as HeadersInit);
+      return {
+        url: typeof url === 'string' ? url : url.toString(),
+        method: init?.method || 'GET',
+        headers,
+        json: jest.fn().mockResolvedValue(body ? JSON.parse(body as string) : {}),
+      };
+    }),
+    NextResponse: {
+      json: jest.fn((data: any, init?: { status?: number }) => {
+        return new Response(JSON.stringify(data), {
+          status: init?.status || 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }),
+    },
+  };
+});
+
 import { POST } from '../results/route';
 import { NextRequest } from 'next/server';
 import { PrismaClient } from '@prisma/client';
@@ -19,6 +45,16 @@ jest.mock('@prisma/client', () => {
   };
 });
 
+// Helper to create NextRequest for testing
+function createTestRequest(url: string, options: { method?: string; headers?: Record<string, string>; body?: string } = {}) {
+  const { method = 'GET', headers = {}, body } = options;
+  return new NextRequest(url, {
+    method,
+    headers,
+    body,
+  }) as any;
+}
+
 const mockAuthenticateApiKey = authenticateApiKey as jest.MockedFunction<typeof authenticateApiKey>;
 const mockGetApiKeyFromRequest = getApiKeyFromRequest as jest.MockedFunction<typeof getApiKeyFromRequest>;
 
@@ -31,7 +67,7 @@ describe('POST /api/results', () => {
     mockGetApiKeyFromRequest.mockReturnValue(null);
     mockAuthenticateApiKey.mockResolvedValue(null);
 
-    const request = new NextRequest('http://localhost:3000/api/results', {
+    const request = createTestRequest('http://localhost:3000/api/results', {
       method: 'POST',
       headers: {},
       body: JSON.stringify({
@@ -52,7 +88,7 @@ describe('POST /api/results', () => {
     mockGetApiKeyFromRequest.mockReturnValue('invalid-key');
     mockAuthenticateApiKey.mockResolvedValue(null);
 
-    const request = new NextRequest('http://localhost:3000/api/results', {
+    const request = createTestRequest('http://localhost:3000/api/results', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer invalid-key',
@@ -82,7 +118,7 @@ describe('POST /api/results', () => {
       updatedAt: new Date(),
     } as any);
 
-    const request = new NextRequest('http://localhost:3000/api/results', {
+    const request = createTestRequest('http://localhost:3000/api/results', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer valid-key',
@@ -117,7 +153,7 @@ describe('POST /api/results', () => {
     const mockCreate = jest.fn().mockResolvedValue({ id: 'test-run-id' });
     (mockPrisma.testRun as any).create = mockCreate;
 
-    const request = new NextRequest('http://localhost:3000/api/results', {
+    const request = createTestRequest('http://localhost:3000/api/results', {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer valid-key',
