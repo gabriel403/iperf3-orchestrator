@@ -297,6 +297,57 @@ If you encounter database errors:
 
 See [LICENSE](LICENSE) file for details.
 
+## Publishing
+
+This project uses GitHub Actions to automatically publish packages to GitHub Packages:
+
+- **Server Package**: `@gabriel403/iperf-orchestrator-server`
+- **Client Package**: `@gabriel403/iperf-orchestrator-client`
+
+### Versioning
+
+The project follows [Semantic Versioning](https://semver.org/) (semver):
+
+- **Main branch**: Publishes stable releases with `latest` tag
+  - Format: `MAJOR.MINOR.PATCH` (e.g., `1.2.3`)
+  - Auto-increments patch version on each push
+
+- **Other branches**: Publishes beta releases with `beta` tag
+  - Format: `MAJOR.MINOR.PATCH-beta.BRANCH.TIMESTAMP.COMMIT` (e.g., `1.2.3-beta.feature-xyz.20241218143022.a1b2c3d`)
+  - Includes branch name, timestamp, and commit hash for traceability
+
+### Installation
+
+**Setup GitHub Packages authentication:**
+```bash
+# Create a GitHub Personal Access Token with `read:packages` permission
+# Then add to your .npmrc:
+echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> ~/.npmrc
+```
+
+**Stable releases:**
+```bash
+npm install @gabriel403/iperf-orchestrator-server
+npm install @gabriel403/iperf-orchestrator-client
+```
+
+**Beta releases:**
+```bash
+npm install @gabriel403/iperf-orchestrator-server@beta
+npm install @gabriel403/iperf-orchestrator-client@beta
+```
+
+### Manual Publishing
+
+You can manually trigger a release via GitHub Actions:
+1. Go to Actions → Select workflow → Run workflow
+2. Choose version bump type (major, minor, patch)
+3. Only works on `main` branch
+
+### CI/CD Setup
+
+No additional setup required! GitHub Actions automatically uses `GITHUB_TOKEN` to publish to GitHub Packages. The workflows have the necessary permissions configured.
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.

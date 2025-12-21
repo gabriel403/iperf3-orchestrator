@@ -40,7 +40,9 @@ export default async function NodePage({
   const node = await getNode(id);
   if (!node) return notFound();
 
-  const runs = await getRecentRuns(node.id);
+  // Store node.id in a const to ensure TypeScript knows it's not null
+  const nodeId = node.id;
+  const runs = await getRecentRuns(nodeId);
 
   const labels = runs.map((r) => r.startedAt.toISOString());
   const throughput = runs.map((r) => r.throughputMbps ?? null);
@@ -61,7 +63,7 @@ export default async function NodePage({
   async function deleteNode() {
     "use server";
     await prisma.node.delete({
-      where: { id: node.id },
+      where: { id: nodeId },
     });
     redirect("/");
   }

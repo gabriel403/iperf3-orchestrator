@@ -1,0 +1,78 @@
+name: CI
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+      - '**'
+
+jobs:
+  test-server:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd server
+          yarn install --frozen-lockfile
+
+      - name: Setup database
+        run: |
+          cd server
+          mkdir -p prisma
+          npx prisma generate
+          npx prisma db push --skip-generate --accept-data-loss
+        env:
+          DATABASE_URL: "file:./prisma/test.db"
+
+      - name: Run linter
+        run: |
+          cd server
+          yarn lint
+
+      - name: Run tests
+        run: |
+          cd server
+          yarn test --coverage --watchAll=false
+        env:
+          DATABASE_URL: "file:./prisma/test.db"
+
+      - name: Build
+        run: |
+          cd server
+          yarn build
+        env:
+          DATABASE_URL: "file:./prisma/test.db"
+
+  test-client:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd client
+          yarn install --frozen-lockfile
+
+      - name: Build
+        run: |
+          cd client
+          yarn build

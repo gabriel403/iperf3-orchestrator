@@ -68,17 +68,21 @@ describe('NewNodeForm', () => {
     
     render(<NewNodeForm createNode={mockCreateNode} />);
 
-    const nameInput = screen.getByLabelText(/name/i);
-    const apiKeyInput = screen.getByLabelText(/api key/i);
+    const nameInput = screen.getByLabelText(/name/i) as HTMLInputElement;
+    const apiKeyInput = screen.getByLabelText(/api key/i) as HTMLInputElement;
     const submitButton = screen.getByRole('button', { name: /create node/i });
 
     await user.type(nameInput, 'Test Node');
     await user.type(apiKeyInput, 'test-api-key');
+
+    // Verify values were set
+    expect(nameInput.value).toBe('Test Node');
+    expect(apiKeyInput.value).toBe('test-api-key');
+
+    // Submit the form
     await user.click(submitButton);
 
     // Note: In a real implementation, you'd need to mock FormData handling
     // This test verifies the button is clickable and form structure is correct
-    expect(nameInput).toHaveValue('Test Node');
-    expect(apiKeyInput).toHaveValue('test-api-key');
   });
 });
