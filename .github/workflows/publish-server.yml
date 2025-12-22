@@ -69,6 +69,21 @@ jobs:
         env:
           DATABASE_URL: "file:./prisma/test.db"
 
+      - name: Check for package changes
+        id: changes
+        run: |
+          # Check if server files changed since last commit
+          # If HEAD~1 doesn't exist (first commit), assume changes exist
+          if git rev-parse --verify HEAD~1 >/dev/null 2>&1; then
+            if git diff --quiet HEAD~1 HEAD -- server/ 2>/dev/null; then
+              echo "has_changes=false" >> $GITHUB_OUTPUT
+            else
+              echo "has_changes=true" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+          fi
+
       - name: Determine version
         id: version
         run: |
@@ -88,15 +103,40 @@ jobs:
             echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
             echo "tag=latest" >> $GITHUB_OUTPUT
             echo "is_beta=false" >> $GITHUB_OUTPUT
+            # Reset beta counter on stable release
+            VERSIONS_FILE=".github/versions.json"
+            if [ ! -f "$VERSIONS_FILE" ]; then
+              node -e "const fs = require('fs'); fs.writeFileSync('$VERSIONS_FILE', JSON.stringify({server:{betaCounter:0},client:{betaCounter:0}}, null, 2));"
+            else
+              node -e "const fs = require('fs'); const versions = JSON.parse(fs.readFileSync('$VERSIONS_FILE')); versions.server.betaCounter = 0; fs.writeFileSync('$VERSIONS_FILE', JSON.stringify(versions, null, 2));"
+            fi
           else
-            # Branch builds: beta release
-            BRANCH_SANITIZED=$(echo "$BRANCH_NAME" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
-            TIMESTAMP=$(date +%Y%m%d%H%M%S)
-            COMMIT_SHORT=$(git rev-parse --short HEAD)
-            NEW_VERSION="${CURRENT_VERSION}-beta.${BRANCH_SANITIZED}.${TIMESTAMP}.${COMMIT_SHORT}"
+            # Branch builds: beta release with auto-incrementing counter
+            VERSIONS_FILE=".github/versions.json"
+            
+            # Ensure versions file exists
+            if [ ! -f "$VERSIONS_FILE" ]; then
+              node -e "const fs = require('fs'); fs.writeFileSync('$VERSIONS_FILE', JSON.stringify({server:{betaCounter:0},client:{betaCounter:0}}, null, 2));"
+            fi
+            
+            # Read current beta counter
+            BETA_COUNTER=$(node -p "require('$VERSIONS_FILE').server.betaCounter || 0")
+            
+            # Increment beta counter
+            BETA_COUNTER=$((BETA_COUNTER + 1))
+            
+            # Update versions file
+            node -e "const fs = require('fs'); const versions = JSON.parse(fs.readFileSync('$VERSIONS_FILE')); versions.server.betaCounter = $BETA_COUNTER; fs.writeFileSync('$VERSIONS_FILE', JSON.stringify(versions, null, 2));"
+            
+            NEW_VERSION="${CURRENT_VERSION}-beta.${BETA_COUNTER}"
             echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
             echo "tag=beta" >> $GITHUB_OUTPUT
             echo "is_beta=true" >> $GITHUB_OUTPUT
+            
+            # Warn if package contents changed but version wasn't bumped
+            if [ "${{ steps.changes.outputs.has_changes }}" = "true" ]; then
+              echo "⚠️  Warning: Package contents changed. Consider bumping version in package.json before publishing."
+            fi
           fi
           
           echo "Current version: $CURRENT_VERSION"
@@ -118,12 +158,21 @@ jobs:
             npm publish --tag latest
           fi
 
+      - name: Commit version files (beta only)
+        if: steps.version.outputs.is_beta == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add .github/versions.json server/package.json
+          git commit -m "chore(server): bump beta version to ${{ steps.version.outputs.version }}" || exit 0
+          git push origin ${{ github.ref_name }} || true
+
       - name: Create Git tag (main only)
         if: steps.version.outputs.is_beta == 'false'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add server/package.json
+          git add server/package.json .github/versions.json
           git commit -m "chore(server): bump version to ${{ steps.version.outputs.version }}" || exit 0
           git tag "server-v${{ steps.version.outputs.version }}"
           git push origin main --tags || true

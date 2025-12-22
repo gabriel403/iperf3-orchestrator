@@ -23,13 +23,15 @@ The project uses GitHub Actions to automatically publish packages to GitHub Pack
 ### Other Branches (Beta Releases)
 
 - **Tag**: `beta`
-- **Format**: `MAJOR.MINOR.PATCH-beta.BRANCH.TIMESTAMP.COMMIT`
-- **Example**: `1.2.3-beta.feature-xyz.20241218143022.a1b2c3d`
+- **Format**: `MAJOR.MINOR.PATCH-beta.COUNTER`
+- **Example**: `1.2.3-beta.1`, `1.2.3-beta.2`
 - **Components**:
   - Base version from package.json
-  - Branch name (sanitized)
-  - Timestamp (YYYYMMDDHHMMSS)
-  - Short commit hash
+  - Auto-incrementing counter (stored in `.github/versions.json`)
+- **Behavior**: 
+  - Counter increments on each beta publish
+  - Counter resets to 0 when publishing stable release from main
+  - Warns if package contents changed but version wasn't bumped (doesn't block publish)
 
 ## Workflows
 
